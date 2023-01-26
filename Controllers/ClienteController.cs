@@ -61,4 +61,36 @@ public class ClienteController : ControllerBase
         }
     }
 
+    [HttpPost("Put")]
+    public async Task<IActionResult> Put(
+            [FromServices] AppDbContext context
+            ,[FromBody] CreateClienteViewModel model
+        )
+    {
+        if (!ModelState.IsValid)
+            return BadRequest();
+
+        Cliente cliente = await context
+            .Clientes
+            .FirstOrDefaultAsync(x => x.CPF == model.CPF);
+        
+        if (cliente == null)
+            return NotFound();
+
+        try
+        {
+            cliente.nome = model.nome;
+            cliente.dataNascimento = model.dataNascimento;
+            cliente.idade = Util.CalculateAge(model.dataNascimento);
+            cliente.email = model.email;
+
+            context.Clientes.Update(cliente);
+            await context.SaveChangesAsync();
+            return Ok(cliente);
+        }
+        catch (System.Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError); 
+        }
+    }
 }
