@@ -5,10 +5,10 @@ namespace Vendinha.Models
     public class Cliente
     {
         [Key]
-        public string Nome { get; set; }
+        public string nome { get; set; }
         public string CPF { get; set; }
-        public DateTime DataNascimento { get; set; }
-        public int Idade { get; set; }
-        public string Email { get; set; }
+        public DateTime dataNascimento { get; set; }
+        public int idade { get; set; }
+        public string email { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Vendinha.Data;
 using Vendinha.Models;
 using Vendinha.ViewModels;
+using Vendinha.Utilities;
 
 namespace Vendinha.Controllers;
 
@@ -10,15 +11,8 @@ namespace Vendinha.Controllers;
 [Route("[controller]")]
 public class ClienteController : ControllerBase
 {
-    // [HttpGet(Name = "GetCliente")]
-    // [Route("teste")]
-    // public List<Cliente> Get()
-    // {
-    //     return new List<Cliente>();
-    // }
-
-    [HttpGet(Name = "GetCliente")]
-    public async Task<IActionResult> Get([FromServices] AppDbContext context)
+    [HttpGet("GetAll")]
+    public async Task<IActionResult> GetAsync([FromServices] AppDbContext context)
     {
         List<Cliente> clientes = await context
             .Clientes
@@ -27,7 +21,17 @@ public class ClienteController : ControllerBase
         return Ok(clientes);
     }
 
-    [HttpPost(Name = "PostCliente")]
+    [HttpGet("GetByCPF{CPF}")]
+    public async Task<IActionResult> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
+    {
+        Cliente cliente = await context
+            .Clientes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.CPF == CPF);
+        return cliente == null ? NotFound() : Ok(cliente);
+    }
+
+    [HttpPost("Post")]
     public async Task<IActionResult> Post(
             [FromServices] AppDbContext context
             ,[FromBody] CreateClienteViewModel model
@@ -38,22 +42,23 @@ public class ClienteController : ControllerBase
 
         Cliente cliente = new Cliente
         {
-            Nome = "joao"
-            ,CPF = "123"
-            ,DataNascimento = DateTime.Now
-            ,Idade = 12
-            ,Email = "aaa"
+            nome = model.nome
+            ,CPF = model.CPF
+            ,dataNascimento = model.dataNascimento
+            ,idade = Util.CalculateAge(model.dataNascimento)
+            ,email = string.IsNullOrEmpty(model.email) ? String.Empty : model.email 
         };
 
         try
         {
             await context.Clientes.AddAsync(cliente);
             await context.SaveChangesAsync();
-            return Created($"v1/clientes/{cliente.CPF}", cliente);
+            return Created($"clientes/{cliente.CPF}", cliente);
         }
         catch (System.Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError); 
         }
     }
+
 }
