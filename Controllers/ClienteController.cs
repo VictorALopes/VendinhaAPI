@@ -34,7 +34,7 @@ public class ClienteController : ControllerBase
     [HttpPost("Post")]
     public async Task<IActionResult> Post(
             [FromServices] AppDbContext context
-            ,[FromBody] CreateClienteViewModel model
+            ,[FromBody] ClienteViewModel model
         )
     {
         if (!ModelState.IsValid)
@@ -64,7 +64,7 @@ public class ClienteController : ControllerBase
     [HttpPost("Put")]
     public async Task<IActionResult> Put(
             [FromServices] AppDbContext context
-            ,[FromBody] CreateClienteViewModel model
+            ,[FromBody] ClienteViewModel model
         )
     {
         if (!ModelState.IsValid)
@@ -82,7 +82,7 @@ public class ClienteController : ControllerBase
             cliente.nome = model.nome;
             cliente.dataNascimento = model.dataNascimento;
             cliente.idade = Util.CalculateAge(model.dataNascimento);
-            cliente.email = model.email;
+            cliente.email = string.IsNullOrEmpty(model.email) ? String.Empty : model.email;
 
             context.Clientes.Update(cliente);
             await context.SaveChangesAsync();
@@ -91,6 +91,28 @@ public class ClienteController : ControllerBase
         catch (System.Exception)
         {
             return StatusCode(StatusCodes.Status500InternalServerError); 
+        }
+    }
+
+    [HttpDelete("Delete/{CPF}")]
+    public async Task<IActionResult> Delete(
+            [FromServices] AppDbContext context
+            ,[FromRoute] string CPF
+        )
+    {
+        Cliente cliente = await context
+            .Clientes
+            .FirstOrDefaultAsync(x => x.CPF == CPF);
+
+        try
+        {
+            context.Clientes.Remove(cliente);
+            await context.SaveChangesAsync();
+            return Ok($"Cliente deletado. CPF: {CPF}");
+        }
+        catch (System.Exception)
+        {
+            return BadRequest();
         }
     }
 }

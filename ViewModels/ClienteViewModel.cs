@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Vendinha.ViewModels
 {
-    public class CreateClienteViewModel
+    public class ClienteViewModel
     {
         [Required]
         public string nome { get; set; }
