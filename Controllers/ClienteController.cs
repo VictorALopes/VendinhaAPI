@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Vendinha.Data;
 using Vendinha.Models;
-using Vendinha.ViewModels;
+using Vendinha.ViewModels.Cliente;
 using Vendinha.Utilities;
 
 namespace Vendinha.Controllers;
@@ -34,7 +34,7 @@ public class ClienteController : ControllerBase
     [HttpPost("Post")]
     public async Task<IActionResult> Post(
             [FromServices] AppDbContext context
-            ,[FromBody] ClienteViewModel model
+            ,[FromBody] PostViewModel model
         )
     {
         if (!ModelState.IsValid)
@@ -64,7 +64,7 @@ public class ClienteController : ControllerBase
     [HttpPost("Put")]
     public async Task<IActionResult> Put(
             [FromServices] AppDbContext context
-            ,[FromBody] ClienteViewModel model
+            ,[FromBody] PutViewModel model
         )
     {
         if (!ModelState.IsValid)
