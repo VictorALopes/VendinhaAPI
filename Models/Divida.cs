@@ -10,13 +10,13 @@ namespace Vendinha.Models
         public double valor { get; set; }
         public bool pago { get; set; }
         public DateTime dataCriacao { get; set; }
-        public DateTime dataPagamento { get; set; } 
+        public DateTime? dataPagamento { get; set; } 
         
            // Foreign key   
             [Display(Name = "cliente")]  
             public virtual string CPF { get; set; }  
 
             [ForeignKey("CPF")]  
-             public virtual Cliente clientes { get; set; }  
+            public virtual Cliente clientes { get; set; }  
     }
 }
