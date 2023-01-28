@@ -17,6 +17,6 @@ namespace Vendinha.Models
             public virtual string CPF { get; set; }  
 
             [ForeignKey("CPF")]  
-            public virtual Cliente clientes { get; set; }  
+            public virtual Cliente cliente { get; set; }  
     }
 }

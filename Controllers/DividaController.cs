@@ -16,7 +16,7 @@ public class DividaController : ControllerBase
     {
         List<Divida> dividas = await context
             .Dividas
-            .Include(x=>x.clientes)
+            .Include(x=>x.cliente)
             .AsNoTracking()
             .ToListAsync();
         return Ok(dividas);
@@ -27,7 +27,7 @@ public class DividaController : ControllerBase
     {
         Divida divida = await context
             .Dividas
-            .Include(x=>x.clientes)
+            .Include(x=>x.cliente)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.id == id);
         return divida == null ? NotFound(Mensagens.DividaNaoEncontrada) : Ok(divida);
@@ -38,7 +38,7 @@ public class DividaController : ControllerBase
     {
         Task<List<Divida>> dividas = context
             .Dividas
-            .Include(x=>x.clientes)
+            .Include(x=>x.cliente)
             .AsNoTracking()
             .Where(x => x.CPF ==  CPF)
             .ToListAsync();
@@ -64,7 +64,7 @@ public class DividaController : ControllerBase
             ,dataCriacao = DateTime.Now
             ,pago = false
             ,dataPagamento = null
-            ,clientes = context.Clientes.First( x=> x.CPF == model.CPF )
+            ,cliente = context.Clientes.First( x=> x.CPF == model.CPF )
         };
 
         try
@@ -116,7 +116,7 @@ public class DividaController : ControllerBase
             if (divida.CPF != model.CPF)
             {
                 divida.CPF = model.CPF;
-                divida.clientes = context.Clientes.First(x => x.CPF == model.CPF);
+                divida.cliente = context.Clientes.First(x => x.CPF == model.CPF);
             }
 
             context.Dividas.Update(divida);
