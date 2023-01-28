@@ -12,7 +12,8 @@ namespace Vendinha.Controllers;
 public class DividaController : ControllerBase
 {
     [HttpGet("GetAll")]
-    public async Task<ActionResult<List<Divida>>> GetAsync([FromServices] AppDbContext context)
+    public async Task<ActionResult<List<Divida>>> GetAsync(
+        [FromServices] AppDbContext context)
     {
         List<Divida> dividas = await context
             .Dividas
@@ -23,7 +24,9 @@ public class DividaController : ControllerBase
     }
 
     [HttpGet("GetById{id}")]
-    public async Task<ActionResult<List<Divida>>> GetByIdAsync([FromServices] AppDbContext context, [FromRoute] int id)
+    public async Task<ActionResult<List<Divida>>> GetByIdAsync(
+        [FromServices] AppDbContext context
+        ,[FromRoute] int id)
     {
         Divida divida = await context
             .Dividas
@@ -34,7 +37,9 @@ public class DividaController : ControllerBase
     }
 
     [HttpGet("GetByCPF{CPF}")]
-    public async Task<ActionResult<List<Divida>>> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
+    public async Task<ActionResult<List<Divida>>> GetByCPFAsync(
+        [FromServices] AppDbContext context
+        ,[FromRoute] string CPF)
     {
         Task<List<Divida>> dividas = context
             .Dividas
@@ -83,6 +88,7 @@ public class DividaController : ControllerBase
     public async Task<ActionResult<List<Divida>>> Put(
             [FromServices] AppDbContext context
             ,[FromBody] PutViewModel model
+            ,[FromRoute] int id
         )
     {
         if (!ModelState.IsValid)
@@ -90,7 +96,7 @@ public class DividaController : ControllerBase
 
         Divida divida = await context
             .Dividas
-            .FirstOrDefaultAsync(x => x.id == model.id);
+            .FirstOrDefaultAsync(x => x.id == id);
         
         if (divida == null)
             return NotFound(Mensagens.DividaNaoEncontrada);

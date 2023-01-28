@@ -12,7 +12,8 @@ namespace Vendinha.Controllers;
 public class ClienteController : ControllerBase
 {
     [HttpGet("GetAll")]
-    public async Task<ActionResult<List<Cliente>>> GetAsync([FromServices] AppDbContext context)
+    public async Task<ActionResult<List<Cliente>>> GetAsync(
+        [FromServices] AppDbContext context)
     {
         List<Cliente> clientes = await context
             .Clientes
@@ -22,7 +23,9 @@ public class ClienteController : ControllerBase
     }
 
     [HttpGet("GetByCPF{CPF}")]
-    public async Task<ActionResult<List<Cliente>>> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
+    public async Task<ActionResult<List<Cliente>>> GetByCPFAsync(
+        [FromServices] AppDbContext context
+        ,[FromRoute] string CPF)
     {
         Cliente cliente = await context
             .Clientes
@@ -65,6 +68,7 @@ public class ClienteController : ControllerBase
     public async Task<ActionResult<List<Cliente>>> Put(
             [FromServices] AppDbContext context
             ,[FromBody] PutViewModel model
+            ,[FromRoute] string CPF
         )
     {
         if (!ModelState.IsValid)
@@ -72,7 +76,7 @@ public class ClienteController : ControllerBase
 
         Cliente cliente = await context
             .Clientes
-            .FirstOrDefaultAsync(x => x.CPF == model.CPF);
+            .FirstOrDefaultAsync(x => x.CPF == CPF);
         
         if (cliente == null)
             return NotFound();
