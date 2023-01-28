@@ -8,9 +8,7 @@ namespace Vendinha.Utilities
             int AgeInYears = now.Year - DateOfBirth.Year;
 
             if ( now.DayOfYear < DateOfBirth.DayOfYear )
-            {
                 AgeInYears--;
-            }
 
             return AgeInYears;
         }

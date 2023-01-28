@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Vendinha.Data;
 using Vendinha.Models;
 using Vendinha.ViewModels.Divida;
-using Vendinha.Utilities;
+using static Vendinha.Helpers.Divida.DividaHelper;
 
 namespace Vendinha.Controllers;
 
@@ -16,6 +16,7 @@ public class DividaController : ControllerBase
     {
         List<Divida> dividas = await context
             .Dividas
+            .Include(x=>x.clientes)
             .AsNoTracking()
             .ToListAsync();
         return Ok(dividas);
@@ -26,20 +27,22 @@ public class DividaController : ControllerBase
     {
         Divida divida = await context
             .Dividas
+            .Include(x=>x.clientes)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.id == id);
-        return divida == null ? NotFound("Uma dívida com este Id não foi encontrada") : Ok(divida);
+        return divida == null ? NotFound(Mensagens.DividaNaoEncontrada) : Ok(divida);
     }
 
-    [HttpGet("GetByCliente{CPF}")]
+    [HttpGet("GetByCPF{CPF}")]
     public async Task<IActionResult> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
     {
         Task<List<Divida>> dividas = context
             .Dividas
+            .Include(x=>x.clientes)
             .AsNoTracking()
             .Where(x => x.CPF ==  CPF)
             .ToListAsync();
-        return dividas == null ? NotFound() : Ok(dividas);
+        return dividas == null ? NotFound(Mensagens.ClienteNaoTemDividas) : Ok(dividas);
     }
 
     [HttpPost("Post")]
@@ -51,9 +54,9 @@ public class DividaController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest();
 
-        if(context.Dividas.AsNoTracking().FirstOrDefault(x => x.CPF == model.CPF && x.pago == false) != null)
-            return BadRequest("Não foi possível cadastrar a dívida pois o cliente já possui uma dívida não quitada.");
-
+        if(ClienteTemDividaPendente(model.CPF, context))
+            return BadRequest(Mensagens.TemDividaPendente); 
+        
         Divida divida = new Divida
         {
             CPF = model.CPF
@@ -70,13 +73,13 @@ public class DividaController : ControllerBase
             await context.SaveChangesAsync();
             return Created($"dividas/{divida.id}", divida);
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError); 
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message); 
         }
     }
 
-    [HttpPost("Put")]
+    [HttpPut("Put")]
     public async Task<IActionResult> Put(
             [FromServices] AppDbContext context
             ,[FromBody] PutViewModel model
@@ -90,10 +93,16 @@ public class DividaController : ControllerBase
             .FirstOrDefaultAsync(x => x.id == model.id);
         
         if (divida == null)
-            return NotFound("Uma dívida com este Id não foi encontrada");
+            return NotFound(Mensagens.DividaNaoEncontrada);
 
         if (divida.pago)
-            return UnprocessableEntity("Esta dívida já está paga e por isso não pode mais ser alterada.");
+            return UnprocessableEntity(Mensagens.DividaJaFoiPaga);
+
+        if (divida.CPF != model.CPF)
+        {
+            if(ClienteTemDividaPendente(model.CPF, context))
+                return BadRequest(Mensagens.TemDividaPendente); 
+        }
         
         try
         {
@@ -114,9 +123,9 @@ public class DividaController : ControllerBase
             await context.SaveChangesAsync();
             return Ok(divida);
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError); 
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message); 
         }
     }
 
@@ -131,10 +140,10 @@ public class DividaController : ControllerBase
             .FirstOrDefaultAsync(x => x.id == id);
 
         if (divida == null)
-            return NotFound("Uma dívida com este Id não foi encontrada");
+            return NotFound(Mensagens.DividaNaoEncontrada);
 
         if (divida.pago)
-            return UnprocessableEntity("Esta dívida já está paga e por isso não pode mais ser alterada.");
+            return UnprocessableEntity(Mensagens.DividaJaFoiPaga);
 
         try
         {
@@ -142,9 +151,9 @@ public class DividaController : ControllerBase
             await context.SaveChangesAsync();
             return Ok($"Divida excluída. Id: {id}");
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            return BadRequest();
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message); 
         }
     }
 }

@@ -55,13 +55,13 @@ public class ClienteController : ControllerBase
             await context.SaveChangesAsync();
             return Created($"clientes/{cliente.CPF}", cliente);
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError); 
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message); 
         }
     }
 
-    [HttpPost("Put")]
+    [HttpPut("Put")]
     public async Task<IActionResult> Put(
             [FromServices] AppDbContext context
             ,[FromBody] PutViewModel model
@@ -88,9 +88,9 @@ public class ClienteController : ControllerBase
             await context.SaveChangesAsync();
             return Ok(cliente);
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError); 
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message); 
         }
     }
 
@@ -110,9 +110,9 @@ public class ClienteController : ControllerBase
             await context.SaveChangesAsync();
             return Ok($"Cliente deletado. CPF: {CPF}");
         }
-        catch (System.Exception)
+        catch (System.Exception e)
         {
-            return BadRequest();
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message); 
         }
     }
 }
