@@ -40,8 +40,18 @@ public class ClienteController : ControllerBase
             ,[FromBody] PostViewModel model
         )
     {
+        if (!Util.IsCPFValid(model.CPF))
+            ModelState.AddModelError("CPF", "O CPF informado é inválido.");
+
+        if (!string.IsNullOrEmpty(model.email))
+        {
+            if (!Util.IsEmailValid(model.email))
+                ModelState.AddModelError("email", "O email informado é inválido.");
+        }
+
         if (!ModelState.IsValid)
-            return BadRequest();
+            return BadRequest(Util.GetConcatenatedErrorMessages(ModelState));
+            
 
         Cliente cliente = new Cliente
         {
@@ -64,15 +74,21 @@ public class ClienteController : ControllerBase
         }
     }
 
-    [HttpPut("Put")]
+    [HttpPut("Put/{CPF}")]
     public async Task<ActionResult<List<Cliente>>> Put(
             [FromServices] AppDbContext context
             ,[FromBody] PutViewModel model
             ,[FromRoute] string CPF
         )
     {
+        if (!string.IsNullOrEmpty(model.email))
+        {
+            if (!Util.IsEmailValid(model.email))
+                ModelState.AddModelError("email", "O email informado é inválido.");
+        }
+        
         if (!ModelState.IsValid)
-            return BadRequest();
+            return BadRequest(Util.GetConcatenatedErrorMessages(ModelState));
 
         Cliente cliente = await context
             .Clientes
@@ -118,5 +134,5 @@ public class ClienteController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message); 
         }
-    }
+    }    
 }
