@@ -12,7 +12,7 @@ namespace Vendinha.Controllers;
 public class ClienteController : ControllerBase
 {
     [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAsync([FromServices] AppDbContext context)
+    public async Task<ActionResult<List<Cliente>>> GetAsync([FromServices] AppDbContext context)
     {
         List<Cliente> clientes = await context
             .Clientes
@@ -22,7 +22,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpGet("GetByCPF{CPF}")]
-    public async Task<IActionResult> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
+    public async Task<ActionResult<List<Cliente>>> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
     {
         Cliente cliente = await context
             .Clientes
@@ -32,7 +32,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpPost("Post")]
-    public async Task<IActionResult> Post(
+    public async Task<ActionResult<List<Cliente>>> Post(
             [FromServices] AppDbContext context
             ,[FromBody] PostViewModel model
         )
@@ -62,7 +62,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpPut("Put")]
-    public async Task<IActionResult> Put(
+    public async Task<ActionResult<List<Cliente>>> Put(
             [FromServices] AppDbContext context
             ,[FromBody] PutViewModel model
         )
@@ -95,7 +95,7 @@ public class ClienteController : ControllerBase
     }
 
     [HttpDelete("Delete/{CPF}")]
-    public async Task<IActionResult> Delete(
+    public async Task<ActionResult<List<Cliente>>> Delete(
             [FromServices] AppDbContext context
             ,[FromRoute] string CPF
         )

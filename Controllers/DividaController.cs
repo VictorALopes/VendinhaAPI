@@ -12,7 +12,7 @@ namespace Vendinha.Controllers;
 public class DividaController : ControllerBase
 {
     [HttpGet("GetAll")]
-    public async Task<IActionResult> GetAsync([FromServices] AppDbContext context)
+    public async Task<ActionResult<List<Divida>>> GetAsync([FromServices] AppDbContext context)
     {
         List<Divida> dividas = await context
             .Dividas
@@ -23,7 +23,7 @@ public class DividaController : ControllerBase
     }
 
     [HttpGet("GetById{id}")]
-    public async Task<IActionResult> GetByIdAsync([FromServices] AppDbContext context, [FromRoute] int id)
+    public async Task<ActionResult<List<Divida>>> GetByIdAsync([FromServices] AppDbContext context, [FromRoute] int id)
     {
         Divida divida = await context
             .Dividas
@@ -34,7 +34,7 @@ public class DividaController : ControllerBase
     }
 
     [HttpGet("GetByCPF{CPF}")]
-    public async Task<IActionResult> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
+    public async Task<ActionResult<List<Divida>>> GetByCPFAsync([FromServices] AppDbContext context, [FromRoute] string CPF)
     {
         Task<List<Divida>> dividas = context
             .Dividas
@@ -46,7 +46,7 @@ public class DividaController : ControllerBase
     }
 
     [HttpPost("Post")]
-    public async Task<IActionResult> Post(
+    public async Task<ActionResult<List<Divida>>> Post(
             [FromServices] AppDbContext context
             ,[FromBody] PostViewModel model
         )
@@ -80,7 +80,7 @@ public class DividaController : ControllerBase
     }
 
     [HttpPut("Put")]
-    public async Task<IActionResult> Put(
+    public async Task<ActionResult<List<Divida>>> Put(
             [FromServices] AppDbContext context
             ,[FromBody] PutViewModel model
         )
@@ -130,7 +130,7 @@ public class DividaController : ControllerBase
     }
 
     [HttpDelete("Delete/{id}")]
-    public async Task<IActionResult> Delete(
+    public async Task<ActionResult<List<Divida>>> Delete(
             [FromServices] AppDbContext context
             ,[FromRoute] int id
         )
