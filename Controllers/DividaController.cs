@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Vendinha.Data;
 using Vendinha.Models;
+using Vendinha.Utilities;
 using Vendinha.ViewModels.Divida;
 using static Vendinha.Helpers.Divida.DividaHelper;
 
@@ -56,12 +57,18 @@ public class DividaController : ControllerBase
             ,[FromBody] PostViewModel model
         )
     {
-        if (!ModelState.IsValid)
-            return BadRequest();
+
+        Cliente clienteDevedor = context.Clientes.First(x=> x.CPF == model.CPF);
 
         if(ClienteTemDividaPendente(model.CPF, context))
-            return BadRequest(Mensagens.TemDividaPendente); 
-        
+            ModelState.AddModelError("CPF", Mensagens.TemDividaPendente);
+
+        if(clienteDevedor == null)
+            ModelState.AddModelError("CPF", Mensagens.ClienteNaoEncontrado);
+
+        if (!ModelState.IsValid)
+            return BadRequest(Util.GetErrorMessages(ModelState));
+
         Divida divida = new Divida
         {
             CPF = model.CPF
@@ -69,7 +76,7 @@ public class DividaController : ControllerBase
             ,dataCriacao = DateTime.Now
             ,pago = false
             ,dataPagamento = null
-            ,cliente = context.Clientes.First( x=> x.CPF == model.CPF )
+            ,cliente = clienteDevedor
         };
 
         try

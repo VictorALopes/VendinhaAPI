@@ -48,10 +48,10 @@ public class ClienteController : ControllerBase
             if (!Util.IsEmailValid(model.email))
                 ModelState.AddModelError("email", "O email informado é inválido.");
         }
-
+        
         if (!ModelState.IsValid)
-            return BadRequest(Util.GetConcatenatedErrorMessages(ModelState));
-            
+            return BadRequest(Util.GetErrorMessages(ModelState));
+        
 
         Cliente cliente = new Cliente
         {
@@ -88,7 +88,7 @@ public class ClienteController : ControllerBase
         }
         
         if (!ModelState.IsValid)
-            return BadRequest(Util.GetConcatenatedErrorMessages(ModelState));
+            return BadRequest(Util.GetErrorMessages(ModelState));
 
         Cliente cliente = await context
             .Clientes

@@ -1,5 +1,6 @@
 using System.Net.Mail;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Vendinha.ViewModels.ErrorList;
 
 namespace Vendinha.Utilities
 {
@@ -70,13 +71,30 @@ namespace Vendinha.Utilities
 
                return CPF.EndsWith(digito);
         }
-    public static string GetConcatenatedErrorMessages(ModelStateDictionary ModelState)
+        public static string GetConcatenatedErrorMessages(ModelStateDictionary ModelState)
         {
             return string.Join(Environment.NewLine
                 ,ModelState
                 .Values
                 .SelectMany(e => e.Errors)
                 .Select(m => m.ErrorMessage));
+        }
+
+        public static ErrorListViewModel GetErrorMessages(ModelStateDictionary ModelState)
+        {
+            var errors = ModelState
+                            .Values
+                            .SelectMany(e => e.Errors)
+                            .Select(m => m.ErrorMessage);
+            
+            ErrorListViewModel ErrorObject = new ErrorListViewModel();
+            
+            foreach (var error in errors)
+            {
+                ErrorObject.Erros.Add(error.ToString());
+            }
+            
+            return ErrorObject;
         }
     }
 }

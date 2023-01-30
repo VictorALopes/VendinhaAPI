@@ -18,8 +18,9 @@ namespace Vendinha.Helpers.Divida
         {
             public static string TemDividaPendente => "Não foi possível cadastrar a dívida pois o cliente já possui uma dívida não quitada.";
             public static string DividaJaFoiPaga => "Esta dívida já está paga e por isso não pode mais ser alterada.";
-            public static string DividaNaoEncontrada => "Uma dívida com este Id não foi encontrada";
-            public static string ClienteNaoTemDividas => "Nenhuma dívida foi encontrada para este cliente";
+            public static string DividaNaoEncontrada => "Uma dívida com este Id não foi encontrada.";
+            public static string ClienteNaoTemDividas => "Nenhuma dívida foi encontrada para este cliente.";
+            public static string ClienteNaoEncontrado => "Não foi encontrado nenhum cliente com o CPF informado.";
         }
     }
 }
